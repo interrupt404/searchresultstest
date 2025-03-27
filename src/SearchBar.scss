@@ -1,0 +1,187 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap");
+
+* {
+  font-family: "Inter", sans-serif;
+  color: #333;
+}
+
+body {
+  background: linear-gradient(135deg, #ddeaf6, #a8c7e5); // Soft gradient background
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
+}
+
+.search-wrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: 80px;
+}
+
+.search-container {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+}
+
+/* 🔍 Search Bar */
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 10px 20px;
+  border-radius: 50px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  transition: all 0.3s ease-in-out;
+  backdrop-filter: blur(12px);
+
+  &:hover {
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+  }
+
+  &:focus-within {
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.2);
+  }
+}
+
+.search-icon {
+  font-size: 24px;
+  color: #666;
+  transition: color 0.3s ease-in-out;
+
+  .search-bar:focus-within & {
+    color: #007aff;
+  }
+}
+
+.search-input {
+  flex: 1;
+  padding: 12px;
+  font-size: 18px;
+  font-weight: 500;
+  border: none;
+  background: transparent;
+  color: #333;
+  outline: none;
+  transition: all 0.3s ease-in-out;
+
+  &::placeholder {
+    color: #aaa;
+    font-weight: 400;
+  }
+}
+
+/* 🔽 Filter Dropdown */
+select {
+  padding: 8px 14px;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+  outline: none;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+
+  &:hover {
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+}
+
+/* 🔢 Size Input */
+.size-input {
+  width: 80px;
+  padding: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  border-radius: 20px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+  outline: none;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+
+  &:hover {
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+}
+
+/* 🔥 Suggestion Box */
+.suggestion-box {
+  position: absolute;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(12px);
+  margin-top: 12px;
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 6px 18px;
+  z-index: 10;
+}
+
+/* 🏷 Section Headers */
+.suggestion-section {
+  margin-top: 8px;
+
+  .section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #007aff;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+
+  .divider {
+    height: 1px;
+    background: rgba(0, 0, 0, 0.1);
+    margin-bottom: 8px;
+  }
+}
+
+/* 🎯 Suggestion Item */
+.suggestion-item {
+  padding: 10px 16px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  transition: all 0.3s ease-in-out;
+  border-radius: 6px;
+  color: #444;
+
+  &:hover {
+    background: rgba(0, 122, 255, 0.15);
+    color: #007aff;
+  }
+}
+
+select,
+.size-input {
+  color: #aaa; // Light gray placeholder color
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+select.inactive,
+.size-input.inactive {
+  color: #777; // Slightly darker placeholder
+}
+
+/* Active state when user selects/enters a value */
+select:not(.inactive),
+.size-input:not(.inactive) {
+  color: #333;
+}
