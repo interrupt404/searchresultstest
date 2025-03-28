@@ -257,7 +257,7 @@ const Results = () => {
           // ✅ Show "No Results Found" message
           <div className="no-results">
             <img
-              src="/no-results.svg"
+              src="/no-results.jpeg"
               alt="No Results"
               className="no-results-img"
             />
