@@ -71,7 +71,9 @@ const Results = () => {
 
   // 🔹 Handle filter click (update filter & fetch results)
   const handleFilterClick = (selectedFilter) => {
-    setFilter(filterMappings[selectedFilter]);
+    const mappedFilter = filterMappings[selectedFilter];
+    setFilter(mappedFilter);
+    fetchResults(searchQuery, mappedFilter, size); // 🔹 Fetch results instantly
   };
 
   // 🔹 Handle tag click (replace search query & fetch results)
