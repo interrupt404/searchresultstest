@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom"; // 🔹 Import for navigation
+import { useNavigate, useLocation } from "react-router-dom"; // 🔹 Import for navigation
 import axios from "axios";
 import { FiSearch } from "react-icons/fi"; // 🔍 Importing magnifying glass icon
 import "./SearchBar.scss";
@@ -7,11 +7,11 @@ import "./SearchBar.scss";
 const filterOptions = ["all", "video", "player", "tag", "category", "series", "sub_series"];
 
 const SearchBar = () => {
-  const [query, setQuery] = useState("");
+  const location = useLocation(); // 🔹 Hook to get current location
+  const [query, setQuery] = useState(location.state?.searchQuery || "");
   const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [filter, setFilter] = useState("all"); // Default filter is "all"
-  const [size, setSize] = useState(10); // Default number of suggestions
   const [showSuggestions, setShowSuggestions] = useState(false); // ✅ Control suggestion visibility
   const navigate = useNavigate(); // 🔹 Hook to navigate between pages
   const searchRef = useRef(null); // ✅ Reference for outside click detection
@@ -21,14 +21,13 @@ const SearchBar = () => {
       setSuggestions([]);
       return;
     }
-  
+
     const delayDebounce = setTimeout(() => {
-      fetchSuggestions(query, filter, size);
+      fetchSuggestions(query, filter);
     }, 300);
-  
+
     return () => clearTimeout(delayDebounce);
-  }, [query, filter, size, showSuggestions]);
-  
+  }, [query, filter, showSuggestions]);
 
   useEffect(() => {
     // 🔹 Close suggestions when clicking outside
@@ -42,9 +41,25 @@ const SearchBar = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const fetchSuggestions = async (input, selectedFilter, resultSize) => {
+  useEffect(() => {
+    setQuery((prevQuery) => {
+      // If on home page ("/"), reset query
+      if (location.pathname === "/") return "";
+  
+      // ✅ Only update if it's a new search query and user hasn't typed anything
+      if (location.state?.searchQuery && location.state.searchQuery !== prevQuery) {
+        return location.state.searchQuery;
+      }
+  
+      return prevQuery; // ✅ Otherwise, keep what the user typed
+    });
+  }, [location.state?.searchQuery, location.pathname]); 
+  
+
+
+  const fetchSuggestions = async (input, selectedFilter) => {
     setLoading(true);
-    const apiUrl = `${process.env.REACT_APP_SUGGESTION_API_URL}?query=${input}&filter=${selectedFilter}&size=${resultSize}`;
+    const apiUrl = `${process.env.REACT_APP_SUGGESTION_API_URL}?query=${input}&filter=${selectedFilter}&size=10000`; // ✅ Always send size=1000
 
     try {
       const response = await axios.get(apiUrl);
@@ -83,13 +98,17 @@ const SearchBar = () => {
 
   // 🔹 Handle search (Enter key or suggestion click)
   const handleSearch = (selectedText = null) => {
-    const finalQuery = selectedText || query; // Use selected suggestion or typed query
-    if (!finalQuery.trim()) return;
-
-    setQuery(finalQuery); // ✅ Update search bar text
-    setShowSuggestions(false); // ✅ Hide suggestion box
-    navigate("/results", { state: { searchQuery: finalQuery, filter } }); // 🔹 Pass data to next component
+    const finalQuery = selectedText || query.trim(); // ✅ Ensure no trailing spaces
+    if (finalQuery === "") {
+      setQuery(""); // ✅ Allow full clearing
+      return;
+    }
+  
+    setQuery(finalQuery);
+    setShowSuggestions(false);
+    navigate("/results", { state: { searchQuery: finalQuery, filter } });
   };
+  
 
   return (
     <div className="search-wrapper" ref={searchRef}>
@@ -120,17 +139,6 @@ const SearchBar = () => {
               </option>
             ))}
           </select>
-          <input
-            type="number"
-            min="5"
-            max="500"
-            value={size === 10 ? "" : size}
-            onFocus={(e) => e.target.value = size}
-            onBlur={(e) => !e.target.value && setSize(10)}
-            onChange={(e) => setSize(e.target.value)}
-            className="size-input"
-            placeholder="Size"
-          />
         </div>
 
         {loading && <p className="loading">Loading...</p>}

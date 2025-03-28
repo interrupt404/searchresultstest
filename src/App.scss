@@ -1,0 +1,13 @@
+html {
+    font-size: 12px; // Reduce base font size (default is 16px)
+  }
+  
+  body {
+    transform: scale(0.75);
+    transform-origin: top center;
+  }
+  
+  .search-wrapper {
+    font-size: 0.75rem; // Adjust based on scaling
+  }
+  

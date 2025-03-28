@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./Navbar.js";
 import SearchBar from "./searchBar.js";
 import Results from "./Results";
+import "./App.scss";
 
 function App() {
   return (

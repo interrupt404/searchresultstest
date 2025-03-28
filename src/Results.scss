@@ -14,8 +14,8 @@
   flex-direction: column;
   align-items: center;
   padding: 20px;
-  background: #f9f9f9;
-  width: 100%;
+//   background: #f9f9f9;
+  width: 133.33vw;
 }
 
 /* 🔹 FILTER BAR */
@@ -26,7 +26,10 @@
   gap: 15px;
   margin-bottom: 20px;
   flex-wrap: wrap;
-  width: 100%;
+  background: #f9f9f9;
+
+  height: 50px;
+  width: 54%;
 
   button {
     background: #eee;

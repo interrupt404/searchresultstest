@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import "./Results.scss";
 
@@ -17,18 +17,34 @@ const filterMappings = {
 
 const Results = () => {
   const location = useLocation();
-  const [searchQuery, setSearchQuery] = useState(location.state?.searchQuery || "");
+  const navigate = useNavigate(); // ✅ Initialize useNavigate
+
+  const [searchQuery, setSearchQuery] = useState(
+    location.state?.searchQuery || ""
+  );
   const [filter, setFilter] = useState(location.state?.filter || "all");
   const [size, setSize] = useState(100);
   const [results, setResults] = useState([]);
 
   useEffect(() => {
-    if (location.state?.searchQuery && location.state.searchQuery !== searchQuery) {
+    if (
+      (location.state?.searchQuery &&
+        location.state.searchQuery !== searchQuery) ||
+      location.state?.filter !== filter
+    ) {
       setSearchQuery(location.state.searchQuery);
+      setFilter(location.state?.filter || "all");
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.state?.searchQuery]); 
+  }, [location.state?.searchQuery, location.state?.filter]); // ✅ Added filter dependency
+
+  const handleNewSearch = (newQuery) => {
+    setSearchQuery(""); // ✅ Keep input empty
+    setFilter("all");
   
+    navigate("/results", { state: { searchQuery: newQuery, filter: "all", placeholder: newQuery } });
+  };
+  
+
   // 🔹 Fetch results from API
   const fetchResults = async (query, selectedFilter, resultSize) => {
     try {
@@ -74,7 +90,10 @@ const Results = () => {
   const renderVideo = (video) => (
     <div key={video.video_id} className="video-item">
       <div className="thumbnail">
-        <img src={video.thumbnail_url || getRandomPlaceholder()} alt={video.name} />
+        <img
+          src={video.thumbnail_url || getRandomPlaceholder()}
+          alt={video.name}
+        />
       </div>
       <div className="video-info">
         <h3 className="video-title">{video.name}</h3>
@@ -83,7 +102,11 @@ const Results = () => {
         <div className="video-tags">
           {Array.isArray(video.tags) &&
             video.tags.map((tag) => (
-              <span key={tag.tag_id} className="tag" onClick={() => handleTagClick(tag.name)}>
+              <span
+                key={tag.tag_id}
+                className="tag"
+                onClick={() => handleTagClick(tag.name)}
+              >
                 {tag.name}
               </span>
             ))}
@@ -173,36 +196,61 @@ const Results = () => {
 
         {/* 🔹 SIZE INPUT (Triggers fetch on Enter key) */}
         <input
-            type="number"
-            min="5"
-            max="500"
-            value={size}
-            onChange={(e) => setSize(Number(e.target.value))}  // ✅ Ensure size is updated correctly
-            onKeyDown={handleSizeChange}  // ✅ Fetches on Enter key
-            className="size-input"
-            placeholder="Size"
+          type="number"
+          min="5"
+          max="500"
+          value={size}
+          onChange={(e) => setSize(Number(e.target.value))} // ✅ Ensure size is updated correctly
+          onKeyDown={handleSizeChange} // ✅ Fetches on Enter key
+          className="size-input"
+          placeholder="Size"
         />
-
       </div>
 
       {/* 🔹 RESULTS LIST (One Item per Row) */}
       <div className="results-list">
         {results.length > 0 ? (
           results.map((item) => {
+            const handleClick = () => handleNewSearch(item.name); // ✅ Always search in "all" mode
+
             if (item.type === "video") {
-              return renderVideo(item);  // Render Video
+              return (
+                <div key={item.video_id} onClick={handleClick}>
+                  {renderVideo(item)}
+                </div>
+              );
             } else if (item.type === "player") {
-              return renderPlayer(item);  // Render Player
+              return (
+                <div key={item.player_id} onClick={handleClick}>
+                  {renderPlayer(item)}
+                </div>
+              );
             } else if (item.type === "tag") {
-              return renderTag(item);  // Render Tag
+              return (
+                <div key={item.tag_id} onClick={handleClick}>
+                  {renderTag(item)}
+                </div>
+              );
             } else if (item.type === "category") {
-              return renderCategory(item);  // Render Category
+              return (
+                <div key={item.category_id} onClick={handleClick}>
+                  {renderCategory(item)}
+                </div>
+              );
             } else if (item.type === "series") {
-              return renderSeries(item);  // Render Series
+              return (
+                <div key={item.series_id} onClick={handleClick}>
+                  {renderSeries(item)}
+                </div>
+              );
             } else if (item.type === "sub_series") {
-              return renderSubSeries(item);  // Render Sub Series
+              return (
+                <div key={item.sub_series_id} onClick={handleClick}>
+                  {renderSubSeries(item)}
+                </div>
+              );
             } else {
-              return null;  // Handle unexpected types
+              return null;
             }
           })
         ) : (
