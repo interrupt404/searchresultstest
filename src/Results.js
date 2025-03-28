@@ -27,23 +27,28 @@ const Results = () => {
   const [results, setResults] = useState([]);
 
   useEffect(() => {
-    if (
-      (location.state?.searchQuery &&
-        location.state.searchQuery !== searchQuery) ||
-      location.state?.filter !== filter
-    ) {
-      setSearchQuery(location.state.searchQuery);
-      setFilter(location.state?.filter || "all");
-    }
-  }, [location.state?.searchQuery, location.state?.filter]); // ✅ Added filter dependency
+    setSearchQuery((prevQuery) =>
+      location.state?.searchQuery && location.state.searchQuery !== prevQuery
+        ? location.state.searchQuery
+        : prevQuery
+    );
+  
+    setFilter((prevFilter) =>
+      location.state?.filter && location.state.filter !== prevFilter
+        ? location.state.filter
+        : prevFilter
+    );
+  }, [location.state?.searchQuery, location.state?.filter]); // ✅ Only re-runs when location.state changes
+  
 
   const handleNewSearch = (newQuery) => {
     setSearchQuery(""); // ✅ Keep input empty
     setFilter("all");
-  
-    navigate("/results", { state: { searchQuery: newQuery, filter: "all", placeholder: newQuery } });
+
+    navigate("/results", {
+      state: { searchQuery: newQuery, filter: "all", placeholder: newQuery },
+    });
   };
-  
 
   // 🔹 Fetch results from API
   const fetchResults = async (query, selectedFilter, resultSize) => {
@@ -54,7 +59,9 @@ const Results = () => {
         size: resultSize,
       });
 
-      const resultData = response.data?.response?.data || [];
+      const resultData = Array.isArray(response.data?.response?.data)
+        ? response.data.response.data
+        : [];
       setResults(resultData);
     } catch (error) {
       console.error("Error fetching results:", error);
@@ -211,7 +218,7 @@ const Results = () => {
 
       {/* 🔹 RESULTS LIST (One Item per Row) */}
       <div className="results-list">
-        {results.length > 0 ? (
+        {results && results.length > 0 ? ( // ✅ Check for both undefined and empty array
           results.map((item) => {
             const handleClick = () => handleNewSearch(item.name); // ✅ Always search in "all" mode
 
@@ -256,7 +263,7 @@ const Results = () => {
             }
           })
         ) : (
-          // ✅ Show "No Results Found" message
+          // ✅ Show "No Results Found" message correctly
           <div className="no-results">
             <img
               src="/no-results.jpeg"

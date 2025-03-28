@@ -330,3 +330,12 @@
   }
 }
 
+.clickable {
+  cursor: pointer;
+  color: #0073e6; // Highlight color
+  text-decoration: underline;
+}
+
+.clickable:hover {
+  color: #ffffff;
+}
