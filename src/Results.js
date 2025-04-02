@@ -218,7 +218,7 @@ const Results = () => {
 
       {/* 🔹 RESULTS LIST (One Item per Row) */}
       <div className="results-list">
-        {results && results.length > 0 ? ( // ✅ Check for both undefined and empty array
+        {results && results.length > 0 && results[0]?.message !== "No results found for the given query." ? ( // ✅ Check for both undefined and empty array
           results.map((item) => {
             const handleClick = () => handleNewSearch(item.name); // ✅ Always search in "all" mode
 
